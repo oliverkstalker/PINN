@@ -48,6 +48,12 @@ X_IC = np.hstack([x_IC, t_IC])
 X_BC_0 = np.hstack([x_BC_0, t_BC])
 X_BC_1 = np.hstack([x_BC_1, t_BC])
 
+# Normalize the inputs to the range [-1, 1]
+X_f = (X_f - 0.5) * 2
+X_IC = (X_IC - 0.5) * 2
+X_BC_0 = (X_BC_0 - 0.5) * 2
+X_BC_1 = (X_BC_1 - 0.5) * 2
+
 # Print shapes of the tensors to verify
 print("Collocation points (X_f):", X_f.shape)
 print("Initial condition points (X_IC):", X_IC.shape)

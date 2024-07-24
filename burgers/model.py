@@ -2,69 +2,49 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
-class BurgersPINN(models.Model):
-    def __init__(self, layers_config, nu):
-        super(BurgersPINN, self).__init__()
-        self.hidden_layers = []
-        self.nu = nu
-        # Input Layer
-        self.input_layer = layers.InputLayer(input_shape=(2,))
-        
-        # Hidden Layers
-        for units in layers_config:
-            self.hidden_layers.append(layers.Dense(units, activation='tanh'))
-        
-        # Output Layer
-        self.output_layer = layers.Dense(1)
-
-    def build(self, input_shape):
-        # Build the layers
-        super(BurgersPINN, self).build(input_shape)
-        for layer in self.hidden_layers:
-            layer.build(input_shape)
-            input_shape = (input_shape[0], layer.units)
-        self.output_layer.build(input_shape)
-    
-    def call(self, inputs):
+class Network:
+    @classmethod
+    def build(cls, num_inputs=2 ,layers=[16, 32, 64], activation='tanh', num_outputs=1):
+        inputs = tf.keras.layers.Input(shape=(num_inputs,))
         x = inputs
-        for layer in self.hidden_layers:
-            x = layer(x)
-        return self.output_layer(x)
+        for layer in layers:
+            x = tf.keras.layers.Dense(layer, activation=activation)(x)
+        outputs = tf.keras.layers.Dense(num_outputs)(x)
+        return tf.keras.models.Model(inputs=inputs, outputs=outputs)
 
-    def calculate_loss(self, X_f, X_IC, u_IC, X_BC_0, X_BC_1):
-        with tf.GradientTape(persistent=True) as tape:
-            tape.watch(X_f)
-            u = self.call(X_f)
-            u_x = tape.gradient(u, X_f)[:, 0]
-            u_t = tape.gradient(u, X_f)[:, 1]
-        u_xx = tape.gradient(u_x, X_f)[:, 0]
-        del tape
+class GradientLayer(tf.keras.layers.Layer):
+    def __init__(self, model, **kwargs):
+        self.model = model
+        super().__init__(**kwargs)
+    def call(self, x):
+        try:
+            with tf.GradientTape(persistent=True) as g:
+                g.watch(x)
+                with tf.GradientTape(persistent=True) as gg:
+                    gg.watch(x)
+                    u = self.model(x)
+                du_dtx = gg.batch_jacobian(u, x)
+                du_dt = du_dtx[..., 0]
+                du_dx = du_dtx[..., 1]
+            d2u_dx2 = g.batch_jacobian(du_dx, x)[..., 1]
+            return u, du_dt, du_dx, d2u_dx2
+        except Exception as e:
+            print(f"Error in GradientLayer call: {e}")
+            print(f"x shape: {x.shape}")
+            print(f"u shape: {u.shape if 'u' in locals() else 'undefined'}")
+            raise e
 
-        # Compute PDE residual
-        R = u_t + u * u_x - self.nu * u_xx
-        loss_PDE = tf.reduce_mean(tf.square(R))
-
-        # Compute initial condition loss
-        u_IC_pred = self.call(X_IC)
-        loss_IC = tf.reduce_mean(tf.square(u_IC - u_IC_pred))
-
-        # Compute boundary condition loss
-        u_BC_0 = self.call(X_BC_0)
-        u_BC_1 = self.call(X_BC_1)
-        loss_BC_0 = tf.reduce_mean(tf.square(u_BC_0))
-        loss_BC_1 = tf.reduce_mean(tf.square(u_BC_1))
-        loss_BC = loss_BC_0 + loss_BC_1
-
-        # Total loss
-        total_loss = loss_PDE + loss_IC + loss_BC
-        return total_loss
+    def summary(self):
+        self.model.summary()
+    def save_weights(self, path):
+        self.model.save_weights(path)
+    def load_weights(self, path):
+        self.model.load_weights(path)
 
 def create_model():
-    # Define the configuration for the hidden layers
-    layers_config = [50, 50]  # Example configuration: two hidden layers with 50 neurons each
-    nu = 0.01  # Viscosity parameter for Burgers' equation
-    model = BurgersPINN(layers_config, nu)
-    return model
+    network = Network.build()
+    gradient_layer = GradientLayer(network)
+    return gradient_layer
 
 def load_data():
     X_f = np.load('data/X_f.npy')
