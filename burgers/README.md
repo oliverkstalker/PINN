@@ -10,7 +10,7 @@ __OR__
 Open a terminal and run the following command to clone the repository
 
 ```git clone git@github.com:oliverkstalker/PINN.git```
-```
+
 Navigate to the project directory: Burgers
 
 `cd path/to/PINN/burgers`
