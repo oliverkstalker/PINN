@@ -28,7 +28,7 @@ def train_model(model, X_f, X_IC, u_IC, X_BC_0, X_BC_1, nu, epochs=5000, learnin
         gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))
         
-        if epoch % 100 == 0 or epoch == epochs - 1:
+        if epoch % 1 == 0 or epoch == epochs - 1:
             print(f'Epoch {epoch}, Loss: {loss.numpy()}')
     return model
 

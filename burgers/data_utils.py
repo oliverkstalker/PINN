@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import numpy as np
+
 
 # Define the number of points
 N_f = 10000  # Number of collocation points
