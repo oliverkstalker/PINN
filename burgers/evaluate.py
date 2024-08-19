@@ -36,7 +36,7 @@ def plot_results(X, T, u_pred, residuals):
     ax2.set_ylabel('t')
     ax2.set_zlabel('Residual')
 
-    plt.show()
+    plt.savefig('results/results.png')
 
 def compute_residuals(model, X_test, nu):
     X_test = tf.convert_to_tensor(X_test, dtype=tf.float32)
