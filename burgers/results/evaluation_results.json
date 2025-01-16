@@ -1,0 +1,14 @@
+{
+    "model_config": {
+        "n_layers": 8,
+        "n_neurons": 17,
+        "activation": "tanh"
+    },
+    "error_metrics": {
+        "mse": 0.4468663972387207,
+        "mae": 0.5992610742188041,
+        "max_error": 0.9964573959530848,
+        "mean_residual": 0.003566590603441,
+        "max_residual": 0.011538784019649029
+    }
+}

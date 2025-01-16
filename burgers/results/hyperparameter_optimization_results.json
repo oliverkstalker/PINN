@@ -1,0 +1,10 @@
+{
+    "best_params": {
+        "learning_rate": 0.0001553516220403672,
+        "n_layers": 7,
+        "n_neurons": 75,
+        "activation": "tanh"
+    },
+    "best_value": 0.1734699159860611,
+    "n_trials": 50
+}
