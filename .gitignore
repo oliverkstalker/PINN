@@ -1,3 +1,4 @@
 /venv
 /burgers/venv
 /burgers/__pycache__
+.DS_Store
