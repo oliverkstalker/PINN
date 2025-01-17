@@ -2,28 +2,6 @@
 
 This project implements a Physics-Informed Neural Network to solve the Burgers' equation, combining deep learning with physical constraints to generate accurate numerical solutions.
 
-## Project Structure
-
-```python
-project/
-├── data/
-│   ├── training_data/
-│   └── validation_data/
-├── src/
-│   ├── model/
-│   │   ├── pinn.py
-│   │   └── layers.py
-│   ├── utils/
-│   │   ├── data_processing.py
-│   │   └── visualization.py
-│   └── train.py
-├── results/
-│   ├── figures/
-│   └── checkpoints/
-├── requirements.txt
-└── README.md
-```
-
 ## Overview
 
 The Burgers' equation is a fundamental partial differential equation that appears in various areas of applied mathematics. This implementation uses Physics-Informed Neural Networks (PINNs) to solve it numerically while respecting the underlying physics.
@@ -35,23 +13,6 @@ The Burgers' equation is a fundamental partial differential equation that appear
 - Custom data generation for training and validation
 - Visualization tools for solution comparison
 - Checkpointing and model saving capabilities
-
-## Requirements
-
-To run this project, you need:
-
-```bash
-python>=3.8
-pytorch>=1.8.0
-numpy>=1.19.2
-matplotlib>=3.3.2
-scipy>=1.6.0
-```
-
-Install dependencies using:
-```bash
-pip install -r requirements.txt
-```
 
 ## Usage
 
